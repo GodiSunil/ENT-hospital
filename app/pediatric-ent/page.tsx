@@ -167,7 +167,7 @@ export default function PediatricENT() {
                     </div>
                   </div>
                 ))}
-              </div>
+              </motion.div>
 
               {/* CTA Buttons */}
               <motion.div
@@ -245,7 +245,7 @@ export default function PediatricENT() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-xl text-muted-foreground max-w-3xl mx-auto"
             >
-              Comprehensive ENT care tailored specifically for children's unique needs
+              Comprehensive ENT care tailored specifically for children&apos;s unique needs
             </motion.p>
           </div>
 
@@ -406,7 +406,7 @@ export default function PediatricENT() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-xl text-muted-foreground"
             >
-              Making your child's visit comfortable and stress-free
+              Making your child&apos;s visit comfortable and stress-free
             </motion.p>
           </div>
 
@@ -442,7 +442,7 @@ export default function PediatricENT() {
               className="space-y-6"
             >
               <h2 className="text-3xl md:text-4xl font-bold font-manrope">
-                Ready to Schedule Your Child's Visit?
+                Ready to Schedule Your Child&apos;s Visit?
               </h2>
               <p className="text-xl opacity-90">
                 Our pediatric ENT specialists are here to provide gentle, expert care for your little one.

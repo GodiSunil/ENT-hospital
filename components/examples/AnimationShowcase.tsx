@@ -2,19 +2,19 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { AnimatedSection, AnimatedText } from '@/components/ui';
-import { fadeIn, slideUp, slideDown, slideLeft, slideRight, scale } from '@/lib/animations';
+import { AnimatedSection } from '../ui/AnimatedSection';
+import { AnimatedText } from '../ui/AnimatedText';
+import { fadeIn, fadeInUp, slideInFromLeft, slideInFromRight, scaleUp } from '@/lib/animations';
 
 export function AnimationShowcase() {
   const [activeTab, setActiveTab] = useState('fade');
 
   const animations = [
     { id: 'fade', name: 'Fade In', variant: fadeIn },
-    { id: 'slideUp', name: 'Slide Up', variant: slideUp },
-    { id: 'slideDown', name: 'Slide Down', variant: slideDown },
-    { id: 'slideLeft', name: 'Slide Left', variant: slideLeft },
-    { id: 'slideRight', name: 'Slide Right', variant: slideRight },
-    { id: 'scale', name: 'Scale', variant: scale },
+    { id: 'fadeUp', name: 'Fade In Up', variant: fadeInUp },
+    { id: 'slideLeft', name: 'Slide In From Left', variant: slideInFromLeft },
+    { id: 'slideRight', name: 'Slide In From Right', variant: slideInFromRight },
+    { id: 'scale', name: 'Scale Up', variant: scaleUp },
   ];
 
   const currentAnimation = animations.find(anim => anim.id === activeTab)?.variant || fadeIn;

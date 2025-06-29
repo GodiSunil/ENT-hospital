@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -113,11 +113,7 @@ export default function Doctors() {
   const [selectedSpecialization, setSelectedSpecialization] = useState('All Specializations');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    filterDoctors();
-  }, [searchTerm, selectedSpecialization, doctors]);
-
-  const filterDoctors = () => {
+  const filterDoctors = useCallback(() => {
     let filtered = doctors;
 
     // Filter by search term
@@ -138,7 +134,11 @@ export default function Doctors() {
     }
 
     setFilteredDoctors(filtered);
-  };
+  }, [searchTerm, selectedSpecialization, doctors]);
+
+  useEffect(() => {
+    filterDoctors();
+  }, [searchTerm, selectedSpecialization, doctors, filterDoctors]);
 
   return (
     <div className="min-h-screen bg-background pt-32">

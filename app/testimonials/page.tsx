@@ -257,7 +257,7 @@ export default function Testimonials() {
 
                       {/* Review Text */}
                       <blockquote className="text-muted-foreground leading-relaxed mb-6 flex-1">
-                        "{testimonial.review}"
+                        &quot;{testimonial.review}&quot;
                       </blockquote>
 
                       {/* Treatment */}

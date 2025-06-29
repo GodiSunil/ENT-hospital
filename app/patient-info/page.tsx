@@ -241,7 +241,7 @@ export default function PatientInfo() {
                       </div>
                       <div className="mt-6 p-4 bg-accent/10 rounded-lg">
                         <p className="text-sm text-muted-foreground">
-                          Don't see your insurance? Call us at (555) 123-4567 to verify coverage.
+                          Don&apos;t see your insurance? Call us at (555) 123-4567 to verify coverage.
                         </p>
                       </div>
                     </CardContent>
@@ -363,7 +363,7 @@ export default function PatientInfo() {
                         <div>
                           <h4 className="font-semibold text-foreground mb-2">Required Documents</h4>
                           <ul className="text-sm text-muted-foreground space-y-1">
-                            <li>• Valid photo ID (driver's license, passport)</li>
+                            <li>&#8226; Valid photo ID (driver&apos;s license, passport)</li>
                             <li>• Insurance card and any referral letters</li>
                             <li>• Completed patient forms</li>
                             <li>• List of current medications</li>
@@ -438,7 +438,7 @@ export default function PatientInfo() {
                           <div className="space-y-2 text-sm text-muted-foreground">
                             <p>• Bring comfort items (favorite toy, blanket)</p>
                             <p>• Explain the visit in age-appropriate terms</p>
-                            <p>• Schedule during your child's best time of day</p>
+                            <p>&#8226; Schedule during your child&apos;s best time of day</p>
                             <p>• Both parents/guardians may accompany child</p>
                           </div>
                         </div>

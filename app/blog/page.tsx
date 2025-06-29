@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -185,11 +185,7 @@ export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    filterPosts();
-  }, [searchTerm, selectedCategory, posts]);
-
-  const filterPosts = () => {
+  const filterPosts = useCallback(() => {
     let filtered = posts;
 
     // Filter by search term
@@ -207,7 +203,11 @@ export default function Blog() {
     }
 
     setFilteredPosts(filtered);
-  };
+  }, [searchTerm, selectedCategory, posts]);
+
+  useEffect(() => {
+    filterPosts();
+  }, [searchTerm, selectedCategory, posts, filterPosts]);
 
   const featuredPosts = posts.filter(post => post.isFeatured);
 

@@ -296,10 +296,10 @@ export default function About() {
                   ][index % 4];
                   
                   const icons = [
-                    <Users className="w-8 h-8 mb-3 text-white/90" />,
-                    <Award className="w-8 h-8 mb-3 text-white/90" />,
-                    <Clock className="w-8 h-8 mb-3 text-white/90" />,
-                    <Star className="w-8 h-8 mb-3 text-white/90" />
+                    <Users key="users" className="w-8 h-8 mb-3 text-white/90" />,
+                    <Award key="award" className="w-8 h-8 mb-3 text-white/90" />,
+                    <Clock key="clock" className="w-8 h-8 mb-3 text-white/90" />,
+                    <Star key="star" className="w-8 h-8 mb-3 text-white/90" />
                   ][index % 4];
                   
                   return (
@@ -332,7 +332,7 @@ export default function About() {
                             }}
                             className="flex justify-center mb-1 md:mb-2"
                           >
-                            {React.cloneElement(icons, { className: 'w-4 h-4 md:w-5 md:h-5 text-white/90' })}
+                            {React.cloneElement(icons, { className: 'w-4 h-4 md:w-5 md:h-5 text-white/90', key: stat.label })}
                           </motion.div>
                           
                           {/* Value with counter animation */}

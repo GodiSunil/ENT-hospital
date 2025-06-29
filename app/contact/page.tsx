@@ -121,7 +121,7 @@ export default function Contact() {
             </div>
             <h1 className="text-4xl md:text-5xl font-bold font-manrope text-foreground mb-6">
               Get in Touch
-              <span className="text-gradient block">We're Here to Help</span>
+              <span className="text-gradient block">We&apos;re Here to Help</span>
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Have questions about our services or need to schedule an appointment? 
@@ -223,7 +223,7 @@ export default function Contact() {
                     Send us a Message
                   </CardTitle>
                   <CardDescription>
-                    Fill out the form below and we'll get back to you as soon as possible
+                    Fill out the form below and we&apos;ll get back to you as soon as possible
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
