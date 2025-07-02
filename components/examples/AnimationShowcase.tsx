@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { AnimatedSection } from '../ui/AnimatedSection';
-import { AnimatedText } from '../ui/AnimatedText';
+import AnimatedText from '../ui/AnimatedText';
 import { fadeIn, fadeInUp, slideInFromLeft, slideInFromRight, scaleUp } from '@/lib/animations';
 
 export function AnimationShowcase() {

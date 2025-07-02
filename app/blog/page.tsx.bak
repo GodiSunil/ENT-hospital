@@ -1,0 +1,491 @@
+"use client";
+
+import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Calendar, Clock, User, Tag, Search, Filter, BookOpen, TrendingUp, Heart, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+
+// Animation variants
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 10
+    }
+  },
+  hover: {
+    y: -5,
+    transition: { duration: 0.2 }
+  }
+};
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: 'easeOut'
+    }
+  }
+};
+
+interface BlogPost {
+  _id: string;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  author: {
+    name: string;
+    image: string;
+    bio: string;
+  };
+  category: string;
+  tags: string[];
+  featuredImage: string;
+  readTime: string;
+  isPublished: boolean;
+  isFeatured: boolean;
+  views: number;
+  likes: number;
+  createdAt: string;
+}
+
+// Sample blog posts data
+const samplePosts: BlogPost[] = [
+  {
+    _id: '1',
+    title: 'Understanding Hearing Loss: Early Signs and Treatment Options',
+    slug: 'understanding-hearing-loss-early-signs-treatment',
+    excerpt: 'Learn about the different types of hearing loss, early warning signs to watch for, and modern treatment options including hearing aids and cochlear implants.',
+    content: '',
+    author: {
+      name: 'Dr. Michael Chen',
+      image: 'https://images.pexels.com/photos/6129967/pexels-photo-6129967.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      bio: 'Otology and Audiology Specialist'
+    },
+    category: 'hearing-loss',
+    tags: ['hearing loss', 'audiology', 'treatment'],
+    featuredImage: 'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    readTime: '8 min read',
+    isPublished: true,
+    isFeatured: true,
+    views: 1250,
+    likes: 89,
+    createdAt: '2024-01-15'
+  },
+  {
+    _id: '2',
+    title: 'Chronic Sinusitis: When to Consider Surgery',
+    slug: 'chronic-sinusitis-when-consider-surgery',
+    excerpt: 'Explore the symptoms of chronic sinusitis, conservative treatment approaches, and when endoscopic sinus surgery might be the best option.',
+    content: '',
+    author: {
+      name: 'Dr. Emily Rodriguez',
+      image: 'https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      bio: 'Rhinology and Sinus Surgery Specialist'
+    },
+    category: 'nose-health',
+    tags: ['sinusitis', 'surgery', 'nose health'],
+    featuredImage: 'https://images.pexels.com/photos/4173251/pexels-photo-4173251.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    readTime: '6 min read',
+    isPublished: true,
+    isFeatured: true,
+    views: 980,
+    likes: 67,
+    createdAt: '2024-01-12'
+  },
+  {
+    _id: '3',
+    title: 'Voice Care for Professional Speakers and Singers',
+    slug: 'voice-care-professional-speakers-singers',
+    excerpt: 'Essential voice care tips for professionals who rely on their voice, including warm-up exercises, hydration, and when to seek professional help.',
+    content: '',
+    author: {
+      name: 'Dr. James Wilson',
+      image: 'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      bio: 'Voice and Laryngology Specialist'
+    },
+    category: 'voice-disorders',
+    tags: ['voice care', 'professional voice', 'singers'],
+    featuredImage: 'https://images.pexels.com/photos/4173624/pexels-photo-4173624.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    readTime: '5 min read',
+    isPublished: true,
+    isFeatured: false,
+    views: 756,
+    likes: 45,
+    createdAt: '2024-01-10'
+  },
+  {
+    _id: '4',
+    title: 'Pediatric ENT: Common Conditions in Children',
+    slug: 'pediatric-ent-common-conditions-children',
+    excerpt: 'A comprehensive guide to common ENT conditions in children, including ear infections, tonsillitis, and when ear tubes might be necessary.',
+    content: '',
+    author: {
+      name: 'Dr. Sarah Johnson',
+      image: 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      bio: 'Pediatric ENT Specialist'
+    },
+    category: 'pediatric-care',
+    tags: ['pediatric', 'children', 'ear infections'],
+    featuredImage: 'https://images.pexels.com/photos/4173239/pexels-photo-4173239.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    readTime: '7 min read',
+    isPublished: true,
+    isFeatured: false,
+    views: 1100,
+    likes: 78,
+    createdAt: '2024-01-08'
+  },
+  {
+    _id: '5',
+    title: 'Managing Seasonal Allergies: ENT Perspective',
+    slug: 'managing-seasonal-allergies-ent-perspective',
+    excerpt: 'Learn how seasonal allergies affect your ears, nose, and throat, and discover effective treatment strategies from an ENT perspective.',
+    content: '',
+    author: {
+      name: 'Dr. Emily Rodriguez',
+      image: 'https://images.pexels.com/photos/5452293/pexels-photo-5452293.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      bio: 'Rhinology and Allergy Specialist'
+    },
+    category: 'allergies',
+    tags: ['allergies', 'seasonal', 'treatment'],
+    featuredImage: 'https://images.pexels.com/photos/4386467/pexels-photo-4386467.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    readTime: '6 min read',
+    isPublished: true,
+    isFeatured: false,
+    views: 890,
+    likes: 56,
+    createdAt: '2024-01-05'
+  },
+  {
+    _id: '6',
+    title: 'Sleep Apnea and ENT: Understanding the Connection',
+    slug: 'sleep-apnea-ent-understanding-connection',
+    excerpt: 'Discover how ENT conditions can contribute to sleep apnea and explore treatment options that can improve your sleep quality.',
+    content: '',
+    author: {
+      name: 'Dr. James Wilson',
+      image: 'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop',
+      bio: 'Head & Neck Surgery Specialist'
+    },
+    category: 'throat-health',
+    tags: ['sleep apnea', 'throat', 'sleep disorders'],
+    featuredImage: 'https://images.pexels.com/photos/3771115/pexels-photo-3771115.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop',
+    readTime: '9 min read',
+    isPublished: true,
+    isFeatured: false,
+    views: 1340,
+    likes: 92,
+    createdAt: '2024-01-03'
+  }
+];
+
+const categories = [
+  { value: 'all', label: 'All Categories' },
+  { value: 'ear-health', label: 'Ear Health' },
+  { value: 'nose-health', label: 'Nose Health' },
+  { value: 'throat-health', label: 'Throat Health' },
+  { value: 'pediatric-care', label: 'Pediatric Care' },
+  { value: 'hearing-loss', label: 'Hearing Loss' },
+  { value: 'voice-disorders', label: 'Voice Disorders' },
+  { value: 'allergies', label: 'Allergies' },
+  { value: 'general-health', label: 'General Health' }
+];
+
+export default function Blog() {
+  useEffect(() => {
+    // Remove any default padding/margin from the main content
+    document.querySelector('main')?.classList.add('pt-0');
+  }, []);
+  const [posts, setPosts] = useState<BlogPost[]>(samplePosts);
+  const [filteredPosts, setFilteredPosts] = useState<BlogPost[]>(samplePosts);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loading, setLoading] = useState(false);
+
+  const filterPosts = useCallback(() => {
+    let filtered = posts;
+
+    // Filter by search term
+    if (searchTerm) {
+      filtered = filtered.filter(post =>
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      filtered = filtered.filter(post => post.category === selectedCategory);
+    }
+
+    setFilteredPosts(filtered);
+  }, [searchTerm, selectedCategory, posts]);
+
+  useEffect(() => {
+    filterPosts();
+  }, [searchTerm, selectedCategory, posts, filterPosts]);
+
+  const featuredPosts = posts.filter(post => post.isFeatured);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pt-0">
+      {/* Header */}
+      <section className="relative pt-24 pb-16 bg-gradient-to-br from-primary/10 via-accent/5 to-accent/10 overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 overflow-hidden opacity-20">
+          <div className="absolute -left-20 -top-20 w-64 h-64 bg-primary/20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+          <div className="absolute -right-20 -bottom-20 w-72 h-72 bg-accent/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-secondary/20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            className="text-center"
+          >
+            <motion.div 
+              className="inline-flex items-center px-6 py-2.5 bg-white/80 backdrop-blur-sm rounded-full mb-6 shadow-lg border border-primary/10 hover:shadow-primary/20 transition-all duration-300"
+              whileHover={{ scale: 1.02 }}
+            >
+              <BookOpen className="w-5 h-5 mr-2 text-primary" />
+              <span className="text-primary font-medium text-sm tracking-wider">HEALTH BLOG</span>
+            </motion.div>
+            <motion.h1 
+              className="text-4xl md:text-6xl font-bold font-manrope text-foreground mb-6 leading-tight"
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0,
+                  transition: { duration: 0.6, delay: 0.2 }
+                }
+              }}
+            >
+              ENT Health
+              <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent block mt-2">
+                Tips & Insights
+              </span>
+            </motion.h1>
+            <motion.p 
+              className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                visible: { 
+                  opacity: 1, 
+                  y: 0,
+                  transition: { duration: 0.6, delay: 0.4 }
+                }
+              }}
+            >
+              Stay informed with the latest insights, tips, and medical advances in 
+              <span className="font-medium text-foreground"> ear, nose, and throat health</span> from our expert specialists.
+            </motion.p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Featured Posts */}
+      {featuredPosts.length > 0 && (
+        <motion.section 
+          className="py-20 relative"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            visible: { 
+              opacity: 1, 
+              transition: { staggerChildren: 0.1, delayChildren: 0.3 }
+            },
+            hidden: { opacity: 0 }
+          }}
+        >
+          <div className="absolute inset-0 bg-white/50 backdrop-blur-sm -z-10"></div>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div 
+              className="flex items-center mb-12"
+              variants={fadeInUp}
+            >
+              <div className="flex items-center">
+                <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center mr-4">
+                  <TrendingUp className="w-5 h-5 text-accent" />
+                </div>
+                <h2 className="text-3xl font-bold font-manrope bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+                  Featured Articles
+                </h2>
+              </div>
+              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent ml-6"></div>
+            </motion.div>
+            
+            <motion.div 
+              className="grid md:grid-cols-2 gap-8"
+              variants={container}
+              initial="hidden"
+              animate="show"
+            >
+              {featuredPosts.slice(0, 2).map((post, index) => (
+                <motion.article
+                  key={post._id}
+                  variants={item}
+                  whileHover="hover"
+                  className="relative bg-white rounded-2xl overflow-hidden group border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="relative h-60 overflow-hidden">
+                    <Image
+                      src={post.featuredImage}
+                      alt={post.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-accent/90 hover:bg-accent text-white border-0 shadow-lg">
+                        <Star className="w-3.5 h-3.5 mr-1.5" />
+                        Featured
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-4 left-4 right-4">
+                      <div className="flex flex-wrap gap-2">
+                        {post.tags.slice(0, 2).map((tag, i) => (
+                          <Badge 
+                            key={i} 
+                            variant="secondary" 
+                            className="text-xs px-2 py-0.5 bg-white/90 backdrop-blur-sm hover:bg-white transition-colors"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 relative z-10">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex items-center text-sm text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+                          <Calendar className="w-4 h-4 mr-1.5 text-primary" />
+                          {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <Clock className="w-4 h-4 mr-1.5 text-accent" />
+                          {post.readTime}
+                        </div>
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Heart className="w-4 h-4 mr-1.5 text-rose-500/80" />
+                        {post.likes}
+                      </div>
+                    </div>
+                    
+                    <Link href={`/blog/${post.slug}`}>
+                      <h3 className="text-2xl font-bold font-manrope text-foreground mb-3 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-muted-foreground mb-6 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                    </Link>
+                    
+                    <div className="flex items-center justify-between pt-4 border-t border-border/20">
+                      <div className="flex items-center space-x-3 group/author">
+                        <div className="relative h-10 w-10 rounded-full overflow-hidden border-2 border-primary/20 group-hover:border-accent transition-all duration-300">
+                          <Image
+                            src={post.author.image}
+                            alt={post.author.name}
+                            fill
+                            className="object-cover group-hover/author:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground group-hover/author:text-primary transition-colors">
+                            {post.author.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {post.author.bio}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <Link href={`/blog/${post.slug}`}>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="text-primary hover:bg-primary/10 group/button transition-all duration-300"
+                        >
+                          Read More
+                          <ChevronDown className="w-4 h-4 ml-2 group-hover:translate-y-0.5 transition-transform" />
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                  
+                  {/* Hover effect */}
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary/20 rounded-2xl pointer-events-none transition-all duration-500"></div>
+                </motion.article>
+              ))}
+            </motion.div>
+          </div>
+        </motion.section>
+      )}
+        
+        {/* Load more button */}
+        {filteredPosts.length > 0 && (
+          <motion.div 
+            className="mt-16 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-white space-y-6"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold font-manrope">
+              Stay Updated with Health Tips
+            </h2>
+            <p className="text-xl opacity-90">
+              Subscribe to our newsletter for the latest ENT health insights and tips 
+              delivered directly to your inbox.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+              <Input 
+                placeholder="Enter your email" 
+                className="bg-white/10 border-white/30 text-white placeholder:text-white/70"
+              />
+              <Button className="bg-white text-primary hover:bg-gray-100 px-8 font-semibold">
+                Subscribe
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+export default Blog;
