@@ -175,15 +175,30 @@ export default function Contact() {
             >
               <h3 className="font-semibold text-foreground mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <Button className="w-full justify-start bg-primary hover:bg-primary/90 text-white">
+                <Button 
+                  onClick={() => window.location.href = '/book-appointment'}
+                  className="w-full justify-start bg-primary hover:bg-primary/90 text-white"
+                >
                   <Calendar className="w-4 h-4 mr-2" />
                   Book Appointment
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => {
+                    if (window.confirm('Call emergency line at (555) 999-HELP?')) {
+                      window.location.href = 'tel:5559994357';
+                    }
+                  }}
+                >
                   <Phone className="w-4 h-4 mr-2" />
                   Call Emergency Line
                 </Button>
-                <Button variant="outline" className="w-full justify-start">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => window.location.href = '/patient-portal'}
+                >
                   <Users className="w-4 h-4 mr-2" />
                   Patient Portal
                 </Button>
