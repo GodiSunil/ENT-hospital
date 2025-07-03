@@ -20,7 +20,7 @@ type AnimatedSectionProps<T extends React.ElementType = 'div'> = {
   as?: T;
 } & Omit<React.ComponentPropsWithoutRef<T>, 'as' | 'ref'>;
 
-export const AnimatedSection = React.forwardRef(
+const AnimatedSection = React.forwardRef(
   <T extends React.ElementType = 'div'>({
     children,
     className,
@@ -113,6 +113,10 @@ export const AnimatedSection = React.forwardRef(
     );
   }
 );
+
+AnimatedSection.displayName = 'AnimatedSection';
+
+export { AnimatedSection };
 
 interface AnimatedListProps<T> {
   items: T[];
