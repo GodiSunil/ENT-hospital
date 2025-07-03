@@ -34,7 +34,8 @@ function StatsCard({ title, value, icon, description }: StatsCardProps) {
 }
 
 export default function DashboardPage() {
-  const { data: session, status } = useSession();
+  const sessionResult = useSession() || {};
+  const { data: session, status } = sessionResult;
   const router = useRouter();
   const [stats, setStats] = useState({
     totalAppointments: 0,

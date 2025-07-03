@@ -4,19 +4,28 @@ import { useState } from 'react';
 import { AlertTriangle, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { Resend } from 'resend';
 
 export function EmergencyButton() {
   const [isCalling, setIsCalling] = useState(false);
   const { toast } = useToast();
 
+  const resendApiKey = process.env.RESEND_API_KEY;
+
   const handleEmergencyCall = async () => {
     if (!window.confirm('Are you sure you want to call emergency services?')) {
       return;
-    } 
+    }
 
     setIsCalling(true);
     
     try {
+      if (!resendApiKey) {
+        throw new Error('Resend API key is missing. Email not sent.');
+      }
+
+      const resend = new Resend(resendApiKey);
+
       const response = await fetch('/api/emergency', {
         method: 'POST',
         headers: {

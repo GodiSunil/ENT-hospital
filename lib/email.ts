@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resendApiKey = process.env.RESEND_API_KEY;
+const resend = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function sendAppointmentConfirmation(
   to: string,
@@ -12,6 +13,10 @@ export async function sendAppointmentConfirmation(
     appointmentId: string;
   }
 ) {
+  if (!resend) {
+    console.warn('Resend API key is missing. Skipping email sending.');
+    return false;
+  }
   try {
     const { data, error } = await resend.emails.send({
       from: 'no-reply@yourhospital.com', // Replace with your verified domain
