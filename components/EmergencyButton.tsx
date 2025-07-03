@@ -12,7 +12,7 @@ export function EmergencyButton() {
   const handleEmergencyCall = async () => {
     if (!window.confirm('Are you sure you want to call emergency services?')) {
       return;
-    }
+    } 
 
     setIsCalling(true);
     
