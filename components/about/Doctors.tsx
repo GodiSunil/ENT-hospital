@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Star, MapPin, Clock, Users, Calendar, Filter, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -212,7 +213,11 @@ export default function Doctors() {
                       <Users className="w-4 h-4 mr-1" />
                       <span>{doctor.experience}+ years</span>
                     </div>
-                    <Button size="sm">View Profile</Button>
+                    <Button asChild size="sm">
+                      <Link href={`/doctors/${doctor._id}`}>
+                        View Profile
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </motion.div>
